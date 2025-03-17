@@ -1,0 +1,50 @@
+compute_environment: LOCAL_MACHINE
+debug: false
+deepspeed_config:
+  deepspeed_multinode_launcher: standard
+  
+  # Zero Redundancy Optimizer (ZeRO) Stage 3 with minimal CPU dependency
+  zero3_init_flag: true
+  zero3_save_16bit_model: true
+  zero_stage: 3
+  
+  zero_optimization:
+    stage: 3
+    reduce_scatter: true  # 使梯度计算结果直接分布到多个 GPU
+    overlap_comm: true  # 计算和通信并行
+    contiguous_gradients: true  # 梯度连续存储，减少碎片化
+    reduce_bucket_size: 125000000  # 通信 bucket 大小，减小可以降低显存峰值
+    allgather_bucket_size: 125000000  # 参数 all-gather 的 bucket 大小
+    offload_optimizer:
+      device: "none"  # 不启用 optimizer 的 CPU offload
+    offload_param:
+      device: "none"  # 不启用参数的 CPU offload
+  pipeline:
+    enable: true
+    stages: 4  # 将模型分成 4 个阶段，每阶段对应一组 GPU
+    micro_batch_size: 8  # 每个 GPU 的 micro-batch 大小
+    activation_checkpoint_interval: 1  # 检查点间隔，减少激活显存需求
+
+  # 设置内存分配优化
+  memory_efficient_linear: true
+  
+distributed_type: DEEPSPEED
+downcast_bf16: 'no'
+
+# 机器与进程
+machine_rank: 0
+num_machines: 1
+num_processes: 8
+
+# 混合精度与通信优化
+mixed_precision: bf16
+
+# 通信配置
+rdzv_backend: static
+same_network: true
+
+# 禁用 CPU 作为主要计算资源
+tpu_env: []
+tpu_use_cluster: false
+tpu_use_sudo: false
+use_cpu: false
