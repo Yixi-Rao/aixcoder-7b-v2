@@ -41,6 +41,12 @@ The `aiXcoder-colt/Reject_Sample/` directory contains implementation and evaluat
   - `eval_span.py`: Span-level evaluation script
   - `inference.py`: Model inference script for generating completions
 
+### 4. DPO Dataset Format
+
+For detailed information about the DPO dataset format requirements:
+- **Chinese Version**: [DPO 数据集格式说明](docs/DPO_DATASET_FORMAT.md)
+- **English Version**: [DPO Dataset Format Specification](docs/DPO_DATASET_FORMAT_EN.md)
+
 ## Dependencies
 
 In our experiments, we utilized two Docker environments for TRL training and vLLM (reject sampling). Below are the key dependencies for each environment, excluding redundant packages:
